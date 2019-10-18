@@ -23,7 +23,7 @@ public class WordCounterTopology {
         try {
             TopologyBuilder builder = getTopologyBuilder();
             cluster.submitTopology("wordCounterTopology", getConfig(), builder.createTopology());
-            Thread.sleep(50000);
+            Thread.sleep(10000);
         } catch (Exception e) {
             cluster.shutdown();
         }
@@ -37,7 +37,8 @@ public class WordCounterTopology {
     private static TopologyBuilder getTopologyBuilder() {
         TopologyBuilder builder = new TopologyBuilder();
         builder.setSpout("wordReaderSpout", new WordReaderSpout());
-        builder.setBolt("wordCounterBolt", new WordCounterBolt()).shuffleGrouping("wordReaderSpout");
+        builder.setBolt("wordCounterBolt", new WordCounterBolt(), 2)
+                .shuffleGrouping("wordReaderSpout"); // Tuples are randomly distributed.
 
         return builder;
     }
